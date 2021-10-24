@@ -2,16 +2,24 @@
 
 declare(strict_types=1);
 
-namespace NeiroNetwork\MagicalPancake\player;
+namespace NeiroNetwork\MagicalPancake;
+
+use NeiroNetwork\MagicalPancake\helper\AsyncPoolGenerator;
+use NeiroNetwork\MagicalPancake\player\AsyncPlayer;
+use pocketmine\scheduler\AsyncPool;
 
 class PlayerInterface{
 
+	private static AsyncPool $asyncPool;
 	private static ?AsyncPlayer $player = null;
 
 	public static function play(string $file = "") : bool{
 		if(self::isPlaying()){
 			return false;
 		}
+
+		$pool = self::$asyncPool ?? self::$asyncPool = AsyncPoolGenerator::gen();
+		$pool->submitTask(self::$player = new AsyncPlayer());
 		return true;
 	}
 
