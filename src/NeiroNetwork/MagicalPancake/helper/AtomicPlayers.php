@@ -34,7 +34,6 @@ class AtomicPlayers extends \Threaded implements Listener{
 	}
 
 	public function onQuit(PlayerQuitEvent $event) : void{
-		var_dump($this->players);
 		unset($this->players[$event->getPlayer()->getName()]);
 	}
 
