@@ -28,10 +28,10 @@ class AsyncSendDataPacketHelper implements Listener{
 	private ZlibCompressor $compressor;
 	private UserToRakLibThreadMessageSender $interface;
 
-	private \Volatile $players;
+	private \ArrayObject $players;
 
 	public function __construct(){
-		$this->players = new \Volatile();
+		$this->players = new \ArrayObject();
 
 		$this->packetSerializerContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
 		$this->compressor = new ZlibCompressor(1, ZlibCompressor::DEFAULT_THRESHOLD, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE);
