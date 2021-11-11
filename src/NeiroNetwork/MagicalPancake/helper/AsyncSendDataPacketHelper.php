@@ -79,8 +79,6 @@ class AsyncSendDataPacketHelper implements Listener{
 	public function onMove(PlayerMoveEvent $event) : void{
 		$player = $event->getPlayer();
 		$pos = $event->getTo();
-		$this->players[$player->getName()]["x"] = $pos->x;
-		$this->players[$player->getName()]["y"] = $pos->y;
-		$this->players[$player->getName()]["z"] = $pos->z;
+		$this->players[$player->getName()]["position"] = [$pos->x, $pos->y, $pos->z];
 	}
 }
