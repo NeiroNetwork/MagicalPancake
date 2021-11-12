@@ -43,7 +43,7 @@ class AsyncablePlayer{
 	public function sendDataPacket(DataPacket|array $packet, bool $immediate = false) : void{
 		// NetworkSession::sendDataPacket()
 		// NetworkSession::addToSendBuffer()
-		$sendBuffer[] = is_array($packet) ? $packet : [$packet];
+		$sendBuffer = is_array($packet) ? $packet : [$packet];
 		// NetworkSession::flushSendBuffer()
 		$stream = PacketBatch::fromPackets($this->packetSerializer, ...$sendBuffer);
 		// Server::prepareBatch()
