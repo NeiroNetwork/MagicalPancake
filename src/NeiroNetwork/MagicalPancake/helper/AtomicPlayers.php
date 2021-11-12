@@ -17,7 +17,7 @@ class AtomicPlayers extends \Threaded implements Listener{
 		return self::$instance ?? self::$instance = new self();
 	}
 
-	/** @var MinimumPlayer[] */
+	/** @var AsyncablePlayer[] */
 	private array $players = [];
 
 	private function __construct(){
@@ -30,7 +30,7 @@ class AtomicPlayers extends \Threaded implements Listener{
 
 	public function onJoin(PlayerJoinEvent $event) : void{
 		$player = $event->getPlayer();
-		$this->players[$player->getName()] = new MinimumPlayer($player);
+		$this->players[$player->getName()] = new AsyncablePlayer($player);
 	}
 
 	public function onQuit(PlayerQuitEvent $event) : void{
