@@ -4,12 +4,26 @@ declare(strict_types=1);
 
 namespace NeiroNetwork\MagicalPancake\player;
 
+use NeiroNetwork\MagicalPancake\helper\AtomicPlayers;
 use pocketmine\scheduler\AsyncTask;
 
 class AsyncPlayer extends AsyncTask{
 
-	private bool $pause = false;
+	private AtomicPlayers $players;
+
 	private bool $shutdown = false;
+	private bool $pause = false;
+
+	public function __construct(){
+		$this->players = AtomicPlayers::getInstance();
+	}
+
+	public function onRun() : void{
+	}
+
+	public function shutdown() : void{
+		$this->shutdown = true;
+	}
 
 	public function getPause() : bool{
 		return $this->pause;
@@ -17,13 +31,5 @@ class AsyncPlayer extends AsyncTask{
 
 	public function setPause(bool $pause = true) : void{
 		$this->pause = $pause;
-	}
-
-	public function shutdown() : void{
-		$this->shutdown = true;
-	}
-
-	public function onRun() : void{
-		// TODO: Implement onRun() method.
 	}
 }
