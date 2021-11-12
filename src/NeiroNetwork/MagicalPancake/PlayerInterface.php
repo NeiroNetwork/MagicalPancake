@@ -24,6 +24,11 @@ class PlayerInterface{
 		return self::isPlaying();
 	}
 
+	public static function isPlaying() : bool{
+		return self::$player !== null;
+	}
+
+	/*
 	public static function pause() : bool{
 		self::$player?->setPause(true);
 		return !self::isPaused();
@@ -34,11 +39,8 @@ class PlayerInterface{
 		return self::isPaused();
 	}
 
-	public static function isPlaying() : bool{
-		return self::$player !== null;
-	}
-
 	public static function isPaused() : bool{
 		return self::$player?->getPause() ?? false;
 	}
+	*/
 }

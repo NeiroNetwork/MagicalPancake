@@ -12,7 +12,6 @@ class AsyncPlayer extends AsyncTask{
 	private AtomicPlayers $players;
 
 	private bool $shutdown = false;
-	private bool $pause = false;
 
 	public function __construct(){
 		$this->players = AtomicPlayers::getInstance();
@@ -23,13 +22,5 @@ class AsyncPlayer extends AsyncTask{
 
 	public function shutdown() : void{
 		$this->shutdown = true;
-	}
-
-	public function getPause() : bool{
-		return $this->pause;
-	}
-
-	public function setPause(bool $pause = true) : void{
-		$this->pause = $pause;
 	}
 }
