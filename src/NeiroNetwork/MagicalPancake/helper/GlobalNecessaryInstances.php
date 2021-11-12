@@ -31,9 +31,9 @@ class GlobalNecessaryInstances{
 		if(!isset(self::$messageSender)){
 			foreach(Server::getInstance()->getNetwork()->getInterfaces() as $interface){
 				if($interface instanceof RakLibInterface){
-					$interface = (new \ReflectionClass($interface))->getProperty("interface");
-					$interface->setAccessible(true);
-					self::$messageSender = $interface->getValue($interface);
+					$property = (new \ReflectionClass($interface))->getProperty("interface");
+					$property->setAccessible(true);
+					self::$messageSender = $property->getValue($interface);
 					break;
 				}
 			}
