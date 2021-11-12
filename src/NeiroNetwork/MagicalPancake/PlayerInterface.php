@@ -13,7 +13,7 @@ class PlayerInterface{
 
 	public static function play(string $file = "") : bool{
 		if(!self::isPlaying()){
-			SingleAsyncPool::submitTask(self::$player = new AsyncPlayer());
+			SingleAsyncPool::submitTask(self::$player = new AsyncPlayer($file));
 		}
 		return !self::isPlaying();
 	}

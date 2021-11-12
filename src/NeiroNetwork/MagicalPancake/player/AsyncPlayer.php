@@ -6,13 +6,12 @@ namespace NeiroNetwork\MagicalPancake\player;
 
 use NeiroNetwork\MagicalPancake\helper\AtomicPlayers;
 use NeiroNetwork\MagicalPancake\midi\MidiConverter;
+use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\scheduler\AsyncTask;
 
 class AsyncPlayer extends AsyncTask{
 
 	private AtomicPlayers $players;
-
-	private bool $endMidi = false;
 
 	public function __construct(private string $file){
 		$this->players = AtomicPlayers::getInstance();
@@ -20,9 +19,29 @@ class AsyncPlayer extends AsyncTask{
 
 	public function onRun() : void{
 		$stream = MidiConverter::midiToStream($this->file);
-	}
+		$startTime = microtime(true);
 
-	public function isEnd() : bool{
-		return $this->endMidi;
+		$endOfData = false;
+		while(!$endOfData){
+			$data = current($stream);
+			if(microtime(true) - $startTime >= $data[0]){
+				foreach($this->players->getAll() as $player){
+					$packets = array_map(function(array $note) use ($player) : PlaySoundPacket{
+						return PlaySoundPacket::create(
+							$note[0],
+							$player->position->x,
+							$player->position->y,
+							$player->position->z,
+							$note[2],
+							MidiConverter::noteToPitch($note[1], $note[0])
+						);
+					}, $data[1]);
+					$player->sendDataPacket($packets);
+				}
+				if(next($stream) === false){
+					$endOfData = true;
+				}
+			}
+		}
 	}
 }
