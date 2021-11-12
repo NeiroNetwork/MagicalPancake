@@ -4,43 +4,48 @@ declare(strict_types=1);
 
 namespace NeiroNetwork\MagicalPancake\helper;
 
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
-use pocketmine\player\Player;
+use pocketmine\network\mcpe\raklib\RakLibInterface;
+use pocketmine\Server;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\server\ipc\UserToRakLibThreadMessageSender;
 
-class AsyncablePlayer{
+class AsyncDataPacket{
 
-	public int $sessionId;
-	public Vector3 $position;
+	private static self $instance;
+
+	public static function getInstance() : self{
+		return self::$instance;
+	}
+
+	public static function initOnMain() : void{
+		self::$instance = new self();
+	}
 
 	private PacketSerializerContext $packetSerializer;
 	private ZlibCompressor $zlibCompressor;
 	private UserToRakLibThreadMessageSender $messageSender;
 
-	public function __construct(Player $player){
-		$session = $player->getNetworkSession();
-		$property = (new \ReflectionClass($session))->getProperty("sender");
-		$property->setAccessible(true);
-		$sender = $property->getValue($session);
-		$property = (new \ReflectionClass($sender))->getProperty("sessionId");
-		$property->setAccessible(true);
-		$this->sessionId = $property->getValue($sender);
-
-		$this->position = $player->getLocation()->asVector3();
-
-		$this->packetSerializer = GlobalNecessaryInstances::getPacketSerializer();
-		$this->zlibCompressor = GlobalNecessaryInstances::getZlibCompressor();
-		$this->messageSender = GlobalNecessaryInstances::getMessageSender();
+	private function __construct(){
+		$this->packetSerializer = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
+		$this->zlibCompressor = new ZlibCompressor(1, ZlibCompressor::DEFAULT_THRESHOLD, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE);
+		foreach(Server::getInstance()->getNetwork()->getInterfaces() as $interface){
+			if($interface instanceof RakLibInterface){
+				$property = (new \ReflectionClass($interface))->getProperty("interface");
+				$property->setAccessible(true);
+				$this->messageSender = $property->getValue($interface);
+				break;
+			}
+		}
 	}
 
-	public function sendDataPacket(DataPacket|array $packet, bool $immediate = false) : void{
+	public function send(int $sessionId, DataPacket|array $packet, bool $immediate = false) : void{
 		// NetworkSession::sendDataPacket()
 		// NetworkSession::addToSendBuffer()
 		$sendBuffer = is_array($packet) ? $packet : [$packet];
@@ -62,6 +67,6 @@ class AsyncablePlayer{
 		$pk->reliability = PacketReliability::RELIABLE_ORDERED;
 		$pk->orderChannel = 0;
 
-		$this->messageSender->sendEncapsulated($this->sessionId, $pk, $immediate);
+		$this->messageSender->sendEncapsulated($sessionId, $pk, $immediate);
 	}
 }

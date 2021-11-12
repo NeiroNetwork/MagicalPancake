@@ -19,7 +19,6 @@ class PlayerInterface{
 	}
 
 	public static function stop() : bool{
-		self::$player?->shutdown();
 		self::$player = null;
 		return self::isPlaying();
 	}
