@@ -40,10 +40,10 @@ class AsyncablePlayer{
 		$this->messageSender = GlobalNecessaryInstances::getMessageSender();
 	}
 
-	public function sendDataPacket(DataPacket $packet, bool $immediate = false) : void{
+	public function sendDataPacket(DataPacket|array $packet, bool $immediate = false) : void{
 		// NetworkSession::sendDataPacket()
 		// NetworkSession::addToSendBuffer()
-		$sendBuffer[] = $packet;
+		$sendBuffer[] = is_array($packet) ? $packet : [$packet];
 		// NetworkSession::flushSendBuffer()
 		$stream = PacketBatch::fromPackets($this->packetSerializer, ...$sendBuffer);
 		// Server::prepareBatch()
