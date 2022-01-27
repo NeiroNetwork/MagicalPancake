@@ -12,6 +12,7 @@ use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\Server;
+use pocketmine\utils\AssumptionFailedError;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\server\ipc\UserToRakLibThreadMessageSender;
@@ -21,11 +22,7 @@ class AsyncDataPacket{
 	private static self $instance;
 
 	public static function getInstance() : self{
-		return self::$instance;
-	}
-
-	public static function initOnMain() : void{
-		self::$instance = new self();
+		return self::$instance ?? self::$instance = new self;
 	}
 
 	private PacketSerializerContext $packetSerializer;
@@ -33,9 +30,15 @@ class AsyncDataPacket{
 	private UserToRakLibThreadMessageSender $messageSender;
 
 	private function __construct(){
+		$networkInterfaces = Server::getInstance()->getNetwork()->getInterfaces();
+		if(count($networkInterfaces) <= 0){
+			// プラグインが有効にされたとき(Plugin::onEnable())だと、NetworkInterfaceが登録されていない
+			throw new AssumptionFailedError("NetworkInterface should be registered more than one");
+		}
+
 		$this->packetSerializer = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
 		$this->zlibCompressor = new ZlibCompressor(1, ZlibCompressor::DEFAULT_THRESHOLD, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE);
-		foreach(Server::getInstance()->getNetwork()->getInterfaces() as $interface){
+		foreach($networkInterfaces as $interface){
 			if($interface instanceof RakLibInterface){
 				$property = (new \ReflectionClass($interface))->getProperty("interface");
 				$property->setAccessible(true);
