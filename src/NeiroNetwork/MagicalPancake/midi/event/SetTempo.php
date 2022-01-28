@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace NeiroNetwork\MagicalPancake\midi\event;
 
-class SetTempo extends MidiEvent{
+class SetTempo extends TickBaseMidiEvent{
 
 	public function __construct(
-		private int $microsecondsPerQuarterNote
+		private int $secondsPerQuarterNote
 	){}
 
-	public function getMicrosecondsPerQuarterNote() : int{
-		return $this->microsecondsPerQuarterNote;
+	public function getSecondsPerQuarterNote() : float{
+		return $this->secondsPerQuarterNote / 1000000;
 	}
 }

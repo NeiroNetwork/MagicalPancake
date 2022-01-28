@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NeiroNetwork\MagicalPancake\midi\event;
 
-class Rest extends MidiEvent{
+class Rest extends TimeBaseMidiEvent{
 
 	public function __construct(
 		private float $restTime

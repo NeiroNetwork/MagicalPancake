@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace NeiroNetwork\MagicalPancake\midi;
 
-use NeiroNetwork\MagicalPancake\midi\event\MidiEvent;
+use NeiroNetwork\MagicalPancake\midi\event\TickBaseMidiEvent;
 
 class TickBasedEvents{
 
-	/** @var MidiEvent[] $events */
+	/** @var TickBaseMidiEvent[] $events */
 	private array $events = [];
 
 	public function getEvents() : array{
 		return $this->events;
 	}
 
-	public function addEvent(int $tick, MidiEvent $event) : void{
+	public function addEvent(int $tick, TickBaseMidiEvent $event) : void{
 		$this->events[$tick][] = $event;
 	}
 

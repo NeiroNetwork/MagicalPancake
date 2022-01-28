@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace NeiroNetwork\MagicalPancake\midi;
 
 use NeiroNetwork\MagicalPancake\midi\event\NoteOn;
+use NeiroNetwork\MagicalPancake\midi\event\NotesOn;
 use NeiroNetwork\MagicalPancake\midi\event\Rest;
 use NeiroNetwork\MagicalPancake\midi\event\SetTempo;
 use Tmont\Midi\Delta;
@@ -25,28 +26,31 @@ class MidiFileConverter{
 		$parser->load($filePath);
 
 		self::parseFile($parser, $ticksPerBeat, $events);
-		$stream = self::toStream($ticksPerBeat, $events);
-		return $stream;
+		return self::toStream($ticksPerBeat, $events);
 	}
 
 	private static function toStream(int $ticksPerBeat, TickBasedEvents $tickBasedEvents) : TimeBasedEventStream{
 		$stream = new TimeBasedEventStream();
 
 		$beforeTick = 0;
-		$currentMpqn = 0;
+		$currentSpqn = 0;
 		foreach($tickBasedEvents->getEvents() as $tick => $events){
-			$time = $currentMpqn * ($tick - $beforeTick) / $ticksPerBeat;
+			$time = $currentSpqn * ($tick - $beforeTick) / $ticksPerBeat;
 			if($time > 0){
 				$stream->addEvent(new Rest($time));
 			}
 			$beforeTick = $tick;
 
+			$notes = [];
 			foreach($events as $event){
 				if($event instanceof SetTempo){
-					$currentMpqn = $event->getMicrosecondsPerQuarterNote();
+					$currentSpqn = $event->getSecondsPerQuarterNote();
 				}elseif($event instanceof NoteOn){
-					$stream->addEvent($event);
+					$notes[] = $event;
 				}
+			}
+			if(!empty($notes)){
+				$stream->addEvent(new NotesOn($notes));
 			}
 		}
 

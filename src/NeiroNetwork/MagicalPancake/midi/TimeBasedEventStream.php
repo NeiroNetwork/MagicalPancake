@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace NeiroNetwork\MagicalPancake\midi;
 
-use NeiroNetwork\MagicalPancake\midi\event\MidiEvent;
+use NeiroNetwork\MagicalPancake\midi\event\TimeBaseMidiEvent;
 
 class TimeBasedEventStream{
 
-	/** @var MidiEvent[] $events */
+	/** @var TimeBaseMidiEvent[] $events */
 	private array $events = [];
 
-	public function addEvent(MidiEvent $event){
+	public function addEvent(TimeBaseMidiEvent $event){
 		$this->events[] = $event;
 	}
 
-	public function next() : ?MidiEvent{
+	public function next() : ?TimeBaseMidiEvent{
 		$event = current($this->events);
 		if($event === false) return null;
 		next($this->events);

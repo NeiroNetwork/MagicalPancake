@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NeiroNetwork\MagicalPancake\midi\event;
 
-class NoteOn extends MidiEvent{
+class NoteOn extends TickBaseMidiEvent{
 
 	public function __construct(
 		private int $note,
