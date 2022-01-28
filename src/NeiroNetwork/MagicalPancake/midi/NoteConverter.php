@@ -25,6 +25,6 @@ class NoteConverter{
 	}
 
 	public static function toVolume(NoteOn $note) : float{
-		return ($note->getVolume() / 127) * ($note->getVelocity() / 127);
+		return ($note->getVolume() / 127) * (($note->getVelocity() / 127) ** 2);
 	}
 }
