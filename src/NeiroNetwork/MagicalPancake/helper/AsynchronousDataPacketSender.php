@@ -17,7 +17,7 @@ use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\server\ipc\UserToRakLibThreadMessageSender;
 
-class AsyncDataPacket{
+class AsynchronousDataPacketSender{
 
 	private static self $instance;
 
@@ -48,10 +48,13 @@ class AsyncDataPacket{
 		}
 	}
 
-	public function send(int $sessionId, DataPacket|array $packet, bool $immediate = false) : void{
+	/**
+	 * @param DataPacket[] $packets
+	 */
+	public function sendTo(int $sessionId, array $packets, bool $immediate = false) : void{
 		// NetworkSession::sendDataPacket()
 		// NetworkSession::addToSendBuffer()
-		$sendBuffer = is_array($packet) ? $packet : [$packet];
+		$sendBuffer = $packets;
 		// NetworkSession::flushSendBuffer()
 		$stream = PacketBatch::fromPackets($this->packetSerializer, ...$sendBuffer);
 		// Server::prepareBatch()
