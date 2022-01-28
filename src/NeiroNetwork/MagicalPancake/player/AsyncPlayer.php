@@ -6,7 +6,10 @@ namespace NeiroNetwork\MagicalPancake\player;
 
 use NeiroNetwork\MagicalPancake\helper\AsyncDataPacket;
 use NeiroNetwork\MagicalPancake\helper\AtomicPlayers;
+use NeiroNetwork\MagicalPancake\midi\event\NoteOn;
+use NeiroNetwork\MagicalPancake\midi\event\Rest;
 use NeiroNetwork\MagicalPancake\midi\MidiConverter;
+use NeiroNetwork\MagicalPancake\midi\MidiFileConverter;
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\scheduler\AsyncTask;
 
@@ -21,29 +24,23 @@ class AsyncPlayer extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$stream = MidiConverter::midiToStream($this->file);
 		$startTime = microtime(true);
-
-		$endOfData = false;
-		while(!$endOfData){
-			$data = current($stream);
-			if(microtime(true) - $startTime >= $data[0]){
+		$stream = MidiFileConverter::convert($this->file);
+		while($event = $stream->next()){
+			if($event instanceof NoteOn){
 				foreach($this->players as $player){
-					$packets = array_map(function(array $note) use ($player) : PlaySoundPacket{
-						return PlaySoundPacket::create(
-							$note[0],
-							$player["position"][0],
-							$player["position"][1],
-							$player["position"][2],
-							$note[2],
-							MidiConverter::noteToPitch($note[1], $note[0])
-						);
-					}, $data[1]);
-					$this->sender->send($player["sessionId"], $packets);
+					$packet = PlaySoundPacket::create(
+						$event->getSound(),
+						$player["position"][0],
+						$player["position"][1],
+						$player["position"][2],
+						($event->getVolume() / 100) * ($event->getVelocity() / 100),
+						MidiConverter::noteToPitch($event->getNote(), $event->getSound())
+					);
+					$this->sender->send($player["sessionId"], $packet);
 				}
-				if(next($stream) === false){
-					$endOfData = true;
-				}
+			}elseif($event instanceof Rest){
+				time_sleep_until($startTime += $event->getRestTime() / 1000000);
 			}
 		}
 	}
