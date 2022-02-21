@@ -47,11 +47,8 @@ class AsyncMidiMusician extends AsyncTask{
 					$player->sendDataPackets($packets);
 				}
 			}elseif($event instanceof Rest){
-				try{
-					time_sleep_until($startTime += $event->getRestTime());
-				}catch(\ErrorException){
-					// なぜかわからないが E_WARNING が発生する
-				}
+				// なぜかわからないが E_WARNING が発生する
+				@time_sleep_until($startTime += $event->getRestTime());
 			}
 		}
 	}
