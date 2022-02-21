@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace NeiroNetwork\MagicalPancake\midi\event;
+namespace NeiroNetwork\MagicalPancake\convert\midi\event;
 
-class SetTempo extends TickBaseMidiEvent{
+class SetTempo extends MidiEvent{
 
 	public function __construct(
 		private int $secondsPerQuarterNote
