@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace NeiroNetwork\MagicalPancake\helper;
 
+use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerQuitEvent;
+use pocketmine\player\Player;
 use pocketmine\scheduler\Task;
 
 class PlayerUpdater extends Task implements Listener{
@@ -27,6 +29,12 @@ class PlayerUpdater extends Task implements Listener{
 	public function onMove(PlayerMoveEvent $event) : void{
 		$player = $event->getPlayer();
 		$this->players->getPlayer($player)->setPosition($event->getTo()->add(0, $player->getEyeHeight(), 0));
+	}
+
+	public function onTeleport(EntityTeleportEvent $event) : void{
+		if(($player = $event->getEntity()) instanceof Player){
+			$this->players->getPlayer($player)->setPosition($event->getTo()->add(0, $player->getEyeHeight(), 0));
+		}
 	}
 
 	public function onRun() : void{
