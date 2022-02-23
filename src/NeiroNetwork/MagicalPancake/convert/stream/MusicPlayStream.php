@@ -26,4 +26,9 @@ class MusicPlayStream{
 		$event = reset($this->events);
 		return $event === false ? null : $event;
 	}
+
+	public function rewind() : ?NoteEvent{
+		$event = prev($this->events);
+		return $event === false ? null : $event;
+	}
 }
