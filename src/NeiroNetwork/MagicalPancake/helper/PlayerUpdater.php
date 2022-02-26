@@ -33,7 +33,7 @@ class PlayerUpdater extends Task implements Listener{
 
 	public function onTeleport(EntityTeleportEvent $event) : void{
 		if(($player = $event->getEntity()) instanceof Player){
-			$this->players->getPlayer($player)->setPosition($event->getTo()->add(0, $player->getEyeHeight(), 0));
+			$this->players->getPlayer($player)?->setPosition($event->getTo()->add(0, $player->getEyeHeight(), 0));
 		}
 	}
 
