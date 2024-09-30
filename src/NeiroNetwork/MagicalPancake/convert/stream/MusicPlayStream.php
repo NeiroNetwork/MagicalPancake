@@ -5,30 +5,49 @@ declare(strict_types=1);
 namespace NeiroNetwork\MagicalPancake\convert\stream;
 
 use NeiroNetwork\MagicalPancake\convert\stream\event\NoteEvent;
+use pmmp\thread\ThreadSafe;
+use pmmp\thread\ThreadSafeArray;
 
-class MusicPlayStream{
+final class MusicPlayStream extends ThreadSafe{
 
-	/** @var NoteEvent[] */
-	private array $events = [];
+	/** @var ThreadSafeArray<int, NoteEvent> */
+	private ThreadSafeArray $events;
+
+	private int $pointer = 0;
+
+	public function __construct(){
+		$this->events = new ThreadSafeArray();
+	}
 
 	public function push(NoteEvent $event) : void{
 		$this->events[] = $event;
 	}
 
-	public function next() : ?NoteEvent{
-		$event = current($this->events);
-		if($event === false) return null;
-		next($this->events);
+	public function currentNext() : ?NoteEvent{
+		$event = $this->current();
+		$this->next();
 		return $event;
 	}
 
-	public function reset() : ?NoteEvent{
-		$event = reset($this->events);
-		return $event === false ? null : $event;
+	public function current() : ?NoteEvent{
+		return $this->events[$this->pointer];
+	}
+
+	public function next() : ?NoteEvent{
+		if($this->current() !== null){
+			$this->pointer++;
+		}
+		return $this->current();
+	}
+
+	public function prev() : ?NoteEvent{
+		if($this->current() !== null){
+			$this->pointer--;
+		}
+		return $this->current();
 	}
 
 	public function rewind() : ?NoteEvent{
-		$event = prev($this->events);
-		return $event === false ? null : $event;
+		return $this->events[$this->pointer = 0];
 	}
 }

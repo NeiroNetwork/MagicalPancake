@@ -1,4 +1,4 @@
 name: MagicalPancake
-version: 0.0.4
+version: 0.1.0
 main: NeiroNetwork\MagicalPancake\Main
-api: 4.0.0
+api: 5.19.0

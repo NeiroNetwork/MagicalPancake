@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace NeiroNetwork\MagicalPancake\convert\stream\event;
 
-class RestEvent extends NoteEvent{
+final class RestEvent extends NoteEvent{
 
 	public function __construct(
-		private float $time
+		public readonly float $time
 	){}
 
+	/** @deprecated */
 	public function getTime() : float{
 		return $this->time;
 	}
