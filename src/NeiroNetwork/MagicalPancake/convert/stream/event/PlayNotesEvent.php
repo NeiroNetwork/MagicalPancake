@@ -5,18 +5,20 @@ declare(strict_types=1);
 namespace NeiroNetwork\MagicalPancake\convert\stream\event;
 
 use NeiroNetwork\MagicalPancake\convert\stream\part\MinecraftNote;
+use pmmp\thread\ThreadSafeArray;
 
-class PlayNotesEvent extends NoteEvent{
+final class PlayNotesEvent extends NoteEvent{
 
 	/**
-	 * @param MinecraftNote[] $notes
+	 * @param ThreadSafeArray<int, MinecraftNote> $notes
 	 */
 	public function __construct(
-		private array $notes = []
+		private ThreadSafeArray $notes = new ThreadSafeArray(),
 	){}
 
+	/** @return MinecraftNote[] */
 	public function getNotes() : array{
-		return $this->notes;
+		return (array) $this->notes;
 	}
 
 	public function add(MinecraftNote $note) : void{
@@ -24,6 +26,6 @@ class PlayNotesEvent extends NoteEvent{
 	}
 
 	public function isEmpty() : bool{
-		return empty($this->notes);
+		return $this->notes->count() === 0;
 	}
 }

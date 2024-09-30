@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace NeiroNetwork\MagicalPancake\convert\stream\part;
 
-class MinecraftNote{
+use pmmp\thread\ThreadSafe;
+
+final class MinecraftNote extends ThreadSafe{
 
 	public function __construct(
-		private string $sound,
-		private float $volume,
-		private float $pitch
+		public readonly string $sound,
+		public readonly float $volume,
+		public readonly float $pitch
 	){}
 
 	public function getSound() : string{

@@ -4,5 +4,7 @@ declare(strict_types=1);
 
 namespace NeiroNetwork\MagicalPancake\convert\stream\event;
 
-abstract class NoteEvent{
+use pmmp\thread\ThreadSafe;
+
+abstract class NoteEvent extends ThreadSafe{
 }
